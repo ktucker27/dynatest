@@ -7,14 +7,21 @@ public class RunParams {
     private double chi;
     private double gamma;
     private double gammaS;
+    private double deltaT;
+    private double tmax;
+    private String prefix;
     
-    public RunParams(int n, double o, double w, double chi, double gamma, double gammaS) {
+    public RunParams(int n, double o, double w, double chi, double gamma, double gammaS, double deltaT, double tmax) {
         this.n = n;
         this.o = o;
         this.w = w;
         this.chi = chi;
         this.gamma = gamma;
         this.gammaS = gammaS;
+        this.deltaT = deltaT;
+        this.tmax = tmax;
+        
+        this.prefix = "";
     }
 
     public int getN() {
@@ -41,8 +48,24 @@ public class RunParams {
         return gammaS;
     }
     
+    public double getDeltaT() {
+        return deltaT;
+    }
+    
+    public double getTMax() {
+        return tmax;
+    }
+    
+    public String getPrefix() {
+        return prefix;
+    }
+    
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+    
     public String getDir() {
-        String dirname = String.format("N%d/o%.1f/w%.1f/chi%.1f/Gamma%.1f/gammaS%.1f/", n, o, w, chi, gamma, gammaS).replace('.', 'p');
+        String dirname = String.format("N%d/o%.1f/w%.1f/chi%.1f/Gamma%.1f/gammaS%.1f", n, o, w, chi, gamma, gammaS).replace('.', 'p');
         
         return dirname;
     }

@@ -2,6 +2,7 @@ package exe;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,7 +22,16 @@ import params.RunParams;
  */
 public class BFE {
 
+    private static void printUsage() {
+        System.out.println("java -jar BFE.jar propfile");
+    }
+    
     public static void main(String[] args) throws IOException, InterruptedException {
+        if(args.length < 1) {
+            printUsage();
+            return;
+        }
+        
         // Read the configuration file
         Properties props = new Properties();
         FileInputStream in = new FileInputStream(args[0]);
@@ -67,19 +77,29 @@ public class BFE {
         // Get the parameters
         // TODO - Read from properties
         ArrayList<RunParams> paramList = new ArrayList<RunParams>();
-        paramList.add(new RunParams(10, 5, 0, 1, 1, 1));
+        paramList.add(new RunParams(10, 5, 0, 1, 1, 1, 1e-4, 2));
         
         // Run the processes
         for(int paramIdx = 0; paramIdx < paramList.size(); ++paramIdx) {
             for(int cmdIdx = 0; cmdIdx < cmds.size(); ++cmdIdx) {
-                List<String> cmdList = cmds.get(cmdIdx).getCommand(paramList.get(paramIdx));
-                for(int i = 0; i < cmdList.size(); ++i) {
-                    System.out.print(cmdList.get(i) + " ");
+                CommandBuilder cmd = cmds.get(cmdIdx);
+                RunParams params = paramList.get(paramIdx);
+                try {
+                    List<String> cmdList = cmd.getCommand(params, props);
+                    for(int i = 0; i < cmdList.size(); ++i) {
+                        System.out.print(cmdList.get(i) + " ");
+                    }
+                    System.out.print("\n");
+
+                    ProcessBuilder pb = new ProcessBuilder(cmdList);
+                    pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                    Process p = pb.start();
+                    p.waitFor();
+                } catch(InvalidParameterException ex) {
+                    System.err.println("Error creating command from " + cmd.getClass().getName() + " for params:\n" + params.toString());
+                    System.err.println(ex.getMessage());
                 }
-                System.out.print("\n");
-                
-                Process p = new ProcessBuilder(cmdList).start();
-                p.waitFor();
             }
         }
     }
