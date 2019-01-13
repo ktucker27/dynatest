@@ -1,5 +1,9 @@
 package params;
 
+import java.util.Properties;
+
+import utils.TestUtils;
+
 public class RunParams {
     private int n;
     private double o;
@@ -10,6 +14,17 @@ public class RunParams {
     private double deltaT;
     private double tmax;
     private String prefix;
+    
+    public static RunParams parseProps(Properties props) {
+        return new RunParams(TestUtils.getRequiredIntProp(props, "N"),
+                             TestUtils.getRequiredDoubleProp(props, "Omega"),
+                             TestUtils.getRequiredDoubleProp(props, "W"),
+                             TestUtils.getRequiredDoubleProp(props, "Chi"),
+                             TestUtils.getRequiredDoubleProp(props, "Gamma"),
+                             TestUtils.getRequiredDoubleProp(props, "GammaS"),
+                             TestUtils.getRequiredDoubleProp(props, "DeltaT"),
+                             TestUtils.getRequiredDoubleProp(props, "TMax"));
+    }
     
     public RunParams(int n, double o, double w, double chi, double gamma, double gammaS, double deltaT, double tmax) {
         this.n = n;

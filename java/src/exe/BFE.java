@@ -81,7 +81,13 @@ public class BFE {
         // Get the parameters
         // TODO - Read from properties
         ArrayList<RunParams> paramList = new ArrayList<RunParams>();
-        paramList.add(new RunParams(10, 5, 0, 1, 1, 1, 1e-4, 2));
+        //paramList.add(new RunParams(10, 5, 0, 1, 1, 1, 1e-4, 2));
+        try {
+            paramList.add(RunParams.parseProps(props));
+        } catch(Exception ex) {
+            System.err.println("Error parsing run paremters");
+            return;
+        }
         
         // Run the processes
         for(int paramIdx = 0; paramIdx < paramList.size(); ++paramIdx) {
