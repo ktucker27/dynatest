@@ -7,11 +7,11 @@ import java.util.Properties;
 import params.RunParams;
 import utils.TestUtils;
 
-public class MCWFCommandBuilder implements CommandBuilder {
+public class SymmCommandBuilder implements CommandBuilder {
     private String myExeDir;
     private String myOutdir;
     
-    public MCWFCommandBuilder() {
+    public SymmCommandBuilder() {
         myExeDir = "";
         myOutdir = "";
     }
@@ -31,16 +31,23 @@ public class MCWFCommandBuilder implements CommandBuilder {
         cmdList.add("java");
         cmdList.add("-jar");
         cmdList.add("-Xmx10G");
-        cmdList.add(myExeDir + "/MCWF.jar");
+        cmdList.add(myExeDir + "/RunSim.jar");
         
         cmdList.add("-n");
         cmdList.add(String.format("%d", params.getN()));
         
         cmdList.add("-o");
         cmdList.add(String.format("%.2f", params.getO()));
+        
+        cmdList.add("-w");
+        cmdList.add(String.format("%.2f", params.getW()));
 
-        cmdList.add("-chi");
-        cmdList.add(String.format("%.2f", params.getChi()));
+        cmdList.add("-g");
+        cmdList.add(String.format("%.2f", 2*params.getChi()));
+        
+        // Assume we always have equal on-site interactions for now
+        cmdList.add("-gaa");
+        cmdList.add(String.format("%.2f", 2*params.getChi()));
         
         cmdList.add("-f");
         cmdList.add(String.format("%.2f", params.getGamma()));
@@ -48,8 +55,13 @@ public class MCWFCommandBuilder implements CommandBuilder {
         cmdList.add("-faa");
         cmdList.add(String.format("%.2f", params.getGamma() + params.getGammaS()));
         
-        cmdList.add("-dt");
-        cmdList.add(String.format("%.2g", params.getDeltaT()));
+        // Assume Delta = 0 for now for the sake of comparison with methods that
+        // do not support disorder
+        cmdList.add("-d");
+        cmdList.add(String.format("%.2f", 0.0));
+        
+        //cmdList.add("-dt");
+        //cmdList.add(String.format("%.2g", params.getDeltaT()));
         
         cmdList.add("-tmax");
         cmdList.add(String.format("%.2f", params.getTMax()));
@@ -59,27 +71,25 @@ public class MCWFCommandBuilder implements CommandBuilder {
         if(!prefix.isEmpty()) {
             prefix += ".";
         }
-        prefix += "mcwf.";
+        prefix += "symm.";
         
-        int numTraj = Integer.parseInt(TestUtils.getRequiredProp(props, prefix + "numTraj"));
-        cmdList.add("-traj");
-        cmdList.add(String.format("%d", numTraj));
-        
-        double evt = Double.parseDouble(TestUtils.getRequiredProp(props, prefix + "evt"));
-        cmdList.add("-evt");
-        cmdList.add(String.format("%.2g", evt));
+        cmdList.add("-t");
         
         int numThreads = Integer.parseInt(TestUtils.getRequiredProp(props, prefix + "numThreads"));
         cmdList.add("-nt");
         cmdList.add(String.format("%d", numThreads));
         
-        cmdList.add(myOutdir + "/" + params.getDir() + "/mcwf");
+        cmdList.add(myOutdir + "/" + params.getDir() + "/symm");
+        cmdList.add("SYMM");
         
         // TODO - Incorporate initial conditions into run parameters
-        if(props.containsKey(prefix + "ic")) {
-            cmdList.add(props.getProperty(prefix + "ic"));
-        }
+        cmdList.add("-iz");
+        cmdList.add(String.format("%.2f", Double.parseDouble(TestUtils.getRequiredProp(props, prefix + "iz"))));
+        
+        cmdList.add("-ip");
+        cmdList.add(String.format("%.2f", Double.parseDouble(TestUtils.getRequiredProp(props, prefix + "ip"))));
         
         return cmdList;
     }
+
 }

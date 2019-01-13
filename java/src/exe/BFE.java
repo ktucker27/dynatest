@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import cmds.CommandBuilder;
 import cmds.MCWFCommandBuilder;
+import cmds.SymmCommandBuilder;
 import params.RunParams;
 
 /**
@@ -61,6 +62,9 @@ public class BFE {
             case MCWF:
                 cmds.add(new MCWFCommandBuilder());
                 break;
+            case SYMM:
+                cmds.add(new SymmCommandBuilder());
+                break;
             default:
                 throw new UnsupportedOperationException("Executable type " + type.toString() + " not yet supported");
             }
@@ -81,9 +85,9 @@ public class BFE {
         
         // Run the processes
         for(int paramIdx = 0; paramIdx < paramList.size(); ++paramIdx) {
+            RunParams params = paramList.get(paramIdx);
             for(int cmdIdx = 0; cmdIdx < cmds.size(); ++cmdIdx) {
                 CommandBuilder cmd = cmds.get(cmdIdx);
-                RunParams params = paramList.get(paramIdx);
                 try {
                     List<String> cmdList = cmd.getCommand(params, props);
                     for(int i = 0; i < cmdList.size(); ++i) {
