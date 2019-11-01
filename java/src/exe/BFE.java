@@ -2,13 +2,22 @@ package exe;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+
 import cmds.CommandBuilder;
 import cmds.MCWFCommandBuilder;
+import cmds.PIQSCommandBuilder;
 import cmds.SymmCommandBuilder;
 import params.RunParams;
 
@@ -24,11 +33,11 @@ import params.RunParams;
 public class BFE {
 
     private static void printUsage() {
-        System.out.println("java -jar BFE.jar propfile");
+        System.out.println("java -jar BFE.jar propfile paramsfile");
     }
     
     public static void main(String[] args) throws IOException, InterruptedException {
-        if(args.length < 1) {
+        if(args.length < 2) {
             printUsage();
             return;
         }
@@ -65,6 +74,9 @@ public class BFE {
             case SYMM:
                 cmds.add(new SymmCommandBuilder());
                 break;
+            case PIQS:
+                cmds.add(new PIQSCommandBuilder());
+                break;
             default:
                 throw new UnsupportedOperationException("Executable type " + type.toString() + " not yet supported");
             }
@@ -83,10 +95,22 @@ public class BFE {
         ArrayList<RunParams> paramList = new ArrayList<RunParams>();
         //paramList.add(new RunParams(10, 5, 0, 1, 1, 1, 1e-4, 2));
         try {
-            paramList.add(RunParams.parseProps(props));
+            //paramList.add(RunParams.parseProps(props));
         } catch(Exception ex) {
             System.err.println("Error parsing run paremters");
             return;
+        }
+        
+        Gson gson = new Gson();
+        FileInputStream instream = new FileInputStream(args[1]);
+        Type collectionType = new TypeToken<Collection<RunParams>>() {}.getType();
+        Collection<RunParams> gsonParams = gson.fromJson(new JsonReader(new InputStreamReader(instream, "UTF-8")), collectionType);
+        //RunParams gsonParams = gson.fromJson("{'n':1}", RunParams.class);
+        Iterator<RunParams> iter = gsonParams.iterator();
+        while(iter.hasNext()) {
+            RunParams params = iter.next();
+            System.out.println(params);
+            paramList.add(params);
         }
         
         // Run the processes

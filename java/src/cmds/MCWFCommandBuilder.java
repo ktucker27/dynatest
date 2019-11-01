@@ -54,6 +54,10 @@ public class MCWFCommandBuilder implements CommandBuilder {
         cmdList.add("-tmax");
         cmdList.add(String.format("%.2f", params.getTMax()));
         
+        // TODO - Add gel to RunParams
+        cmdList.add("-gel");
+        cmdList.add(String.format("%.2g", 0.0));
+        
         // Method specific options
         String prefix = params.getPrefix();
         if(!prefix.isEmpty()) {

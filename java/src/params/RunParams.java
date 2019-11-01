@@ -26,6 +26,19 @@ public class RunParams {
                              TestUtils.getRequiredDoubleProp(props, "TMax"));
     }
     
+    public RunParams() {
+        this.n = 0;
+        this.o = 0;
+        this.w = 0;
+        this.chi = 0;
+        this.gamma = 0;
+        this.gammaS = 0;
+        this.deltaT = 0;
+        this.tmax = 0;
+        
+        this.prefix = "";
+    }
+    
     public RunParams(int n, double o, double w, double chi, double gamma, double gammaS, double deltaT, double tmax) {
         this.n = n;
         this.o = o;
@@ -92,6 +105,8 @@ public class RunParams {
         out += "chi = " + chi + "\n";
         out += "Gamma = " + gamma + "\n";
         out += "gammaS = " + gammaS + "\n";
+        out += "deltaT = " + deltaT + "\n";
+        out += "tmax = " + tmax + "\n";
 
         return out;
     }

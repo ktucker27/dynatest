@@ -7,7 +7,7 @@ import params.RunParams;
 
 public interface CommandBuilder {
     
-    public enum CommandType {SYMM, MCWF};
+    public enum CommandType {SYMM, MCWF, PIQS};
     
     /**
      * Initializes the builder. Must be called successfully before commands
